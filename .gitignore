@@ -1,0 +1,10 @@
+.gradle/
+build/
+.classpath
+.project
+.settings/
+bin/
+.idea/
+.vscode/
+*.class
+resources/*.mp4

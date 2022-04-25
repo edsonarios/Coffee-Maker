@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.7'
+    id 'checkstyle'
+    id 'jacoco'
+    id 'info.solidsoft.pitest' version '1.4.0'
+}
+
+group 'Coffee'
+version '1.0'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    implementation group: 'com.sikulix', name: 'sikulixapi', version: '2.0.4'
+    implementation group: 'org.pitest', name: 'pitest', version: '1.6.7'
+}
+
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+    }
+}
+
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [])
+        }))
+    }
+}
+checkstyle {
+    toolVersion '8.34'
+    configFile file('config/checkstyle/checkstyle.xml')
+    checkstyleMain.source = "src/main/"
+    checkstyleMain.excludes = ["**/src/test/**"]
+}
+checkstyleMain {
+    source = 'src/main/java'
+}
+run{
+    standardInput = System.in
+}
+pitest {
+    targetClasses = ['org.fundacionjala.prog101CoffeeMaker.coffeeMaker.*']
+    targetTests = ['org.fundacionjala.prog101CoffeeMaker.coffeeMaker.*']
+    threads = 4
+    outputFormats = ['XML', 'HTML']
+}
+
+checkstyleTest {
+    source = 'src/main/java'
+}
+check.dependsOn jacocoTestReport
+
+test.finalizedBy("checkstyleMain")
+test.finalizedBy("jacocoTestReport")
+
+javafx {
+    modules = [ 'javafx.controls' , 'javafx.fxml', 'javafx.media']
+    version = '11.0.2'
+}
+
+mainClassName = 'Main'
